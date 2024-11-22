@@ -34,17 +34,15 @@
             })
 
         $('#menu').on( "click", '.categoryClass', function () {
-            if ($(this).data('show-toggle') === true) {
-                let categoryId = $(this).data('id');
+            let categoryId = $(this).data('id');
 
+            if ($(this).data('show-toggle') === true) {
                 axios.get(`/api/${categoryId}/subcategories`)
                     .then( response => {
                         let data = response.data;
 
                         if (data.length > 0) {
-
-
-                            $(`[data-id=${categoryId}]`).after(`<ul id="submenu-${categoryId}" class="mt-4 mx-10 border-l-2 border-gray-400 pl-2 w-72"></ul>`);
+                            $(`[data-id=${categoryId}]`).after(`<ul id="submenu-${categoryId}" class="subcategoryClass mt-4 mx-10 border-l-2 border-gray-400 pl-2 w-72"></ul>`);
 
                             for (let i = 0; i < data.length; i++) {
                                 $(`#submenu-${categoryId}`).append(`<li data-id="${data[i].id}" ` +
@@ -52,15 +50,18 @@
                                     "class=\'categoryClass border border-gray-400 my-3 p-2 w-72 rounded-lg hover:cursor-pointer hover:bg-gray-300\'>" +
                                     `<div class='flex justify-between'>${data[i].name}<span class="text-gray-500">(${data[i].count})</span></div></li>`);
                             }
+
+                            $(this).css('background-color', '#d1d5db')
+
                         } else {
                             alert('No subcategories to show.')
                         }
                     })
             } else {
+                $(`#submenu-${categoryId}`).remove();
 
+                $(this).css('background-color', 'white')
             }
-
-            console.log($(this).data('show-toggle'));
 
             $(this).data('show-toggle', $(this).data('show-toggle') !== true);
         });

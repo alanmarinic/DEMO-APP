@@ -11,7 +11,7 @@
     <div class="">
       <h1 class="text-gray-900 font-semibold text-xl mx-10 mt-3">Categories menu</h1>
 
-      <ul id="menu" class="mt-4 mx-10 border-l-2 pl-2 w-80">
+      <ul id="menu" class="mt-4 mx-10 border-l-2 border-gray-400 pl-2 w-80">
       </ul>
     </div>
 
@@ -26,24 +26,43 @@
                 let data = response.data;
 
                 for (let i = 0; i < data.length; i++) {
-                    $('#menu').append(`<li data-id="${data[i].id}"` +
+                    $('#menu').append(`<li data-id="${data[i].id}" ` +
+                        "data-show-toggle=true " +
                         "class=\'categoryClass border border-gray-400 my-3 p-2 w-72 rounded-lg hover:cursor-pointer hover:bg-gray-300\'>" +
                         `<div class='flex justify-between'>${data[i].name}<span class="text-gray-500">(${data[i].count})</span></div></li>`);
                 }
             })
 
         $('#menu').on( "click", '.categoryClass', function () {
-            axios.get(`/api/${$(this).data('id')}/subcategories`)
-                .then( response => {
-                    let data = response.data;
+            if ($(this).data('show-toggle') === true) {
+                let categoryId = $(this).data('id');
 
-                    console.log(data)
-                    // for (let i = 0; i < data.length; i++) {
-                    //     $('#menu').append(`<li data-id="${data[i].id}"` +
-                    //         "class=\'categoryClass border border-gray-400 my-3 p-2 w-72 rounded-lg hover:cursor-pointer hover:bg-gray-300\'>" +
-                    //         `<div class='flex justify-between'>${data[i].name}<span class="text-gray-500">(${data[i].count})</span></div></li>`);
-                    // }
-                })
+                axios.get(`/api/${categoryId}/subcategories`)
+                    .then( response => {
+                        let data = response.data;
+
+                        if (data.length > 0) {
+
+
+                            $(`[data-id=${categoryId}]`).after(`<ul id="submenu-${categoryId}" class="mt-4 mx-10 border-l-2 border-gray-400 pl-2 w-72"></ul>`);
+
+                            for (let i = 0; i < data.length; i++) {
+                                $(`#submenu-${categoryId}`).append(`<li data-id="${data[i].id}" ` +
+                                    "data-show-toggle=true " +
+                                    "class=\'categoryClass border border-gray-400 my-3 p-2 w-72 rounded-lg hover:cursor-pointer hover:bg-gray-300\'>" +
+                                    `<div class='flex justify-between'>${data[i].name}<span class="text-gray-500">(${data[i].count})</span></div></li>`);
+                            }
+                        } else {
+                            alert('No subcategories to show.')
+                        }
+                    })
+            } else {
+
+            }
+
+            console.log($(this).data('show-toggle'));
+
+            $(this).data('show-toggle', $(this).data('show-toggle') !== true);
         });
     });
   </script>
